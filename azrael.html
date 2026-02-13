@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azrael | Ritual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Carrois+Gothic&family=Nosifer&family=Special+Elite&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root { --blood: #9b0000; --dark: #050505; }
+        body { font-family: 'Carrois Gothic', sans-serif; background-color: var(--dark); color: #fecaca; overflow-x: hidden; cursor: crosshair; }
+        .title-font { font-family: 'Creepster', cursive; }
+        .typewriter { font-family: 'Special Elite', serif; }
+
+        /* Lienzo de Cenizas */
+        #canvas-ash { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 20; }
+
+        /* Luz de Linterna */
+        .flashlight {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent 0%, rgba(0,0,0,0.85) 45%, var(--dark) 100%);
+            z-index: 40; pointer-events: none;
+        }
+
+        /* Animación de Texto */
+        .poem-line { opacity: 0; filter: blur(8px); transform: translateY(15px); transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+        .poem-line.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+        /* Efecto Escáner en Azrael */
+        .azrael-img-container::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(255, 0, 0, 0.3); box-shadow: 0 0 15px red;
+            animation: scan 4s infinite linear;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* Botón Secreto */
+        .secret-seal {
+            width: 50px; height: 50px; border: 1px solid var(--blood); border-radius: 50%;
+            margin: 0 auto; cursor: pointer; transition: all 0.5s;
+            display: flex; items-center; justify-center; position: relative;
+        }
+        .secret-seal:active { transform: scale(0.9); box-shadow: 0 0 30px var(--blood); }
+        
+        #secret-message { max-height: 0; opacity: 0; overflow: hidden; transition: all 2s ease; }
+        #secret-message.revealed { max-height: 500px; opacity: 1; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-ash"></canvas>
+    <div class="flashlight" id="flashlight"></div>
+    <div class="fixed inset-0 opacity-[0.05] pointer-events-none z-50 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+
+    <div class="relative z-30">
+        
+        <section class="h-screen flex flex-col items-center justify-center text-center px-4">
+            <h1 class="title-font text-[100px] md:text-[220px] leading-none text-red-900 select-none hover:text-red-600 transition-colors duration-1000">
+                AZRAEL
+            </h1>
+            <p class="typewriter text-red-950 tracking-[0.5em] text-xs uppercase mb-10">Costurero de Almas Quebradas</p>
+
+            <div class="azrael-img-container relative group rounded-2xl overflow-hidden border border-red-950">
+                <img src="./azrael_files/istockphoto-1540075939-612x612.jpg" 
+                     class="w-64 md:w-80 grayscale brightness-50 group-hover:brightness-100 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+        </section>
+
+        <section class="max-w-3xl mx-auto px-8 py-20">
+            <div class="space-y-16 text-center">
+                
+                <div class="space-y-4">
+                    <p class="poem-line text-2xl italic">La belleza es ajena a lo que él me pidió,</p>
+                    <p class="poem-line text-red-800">con torcidas cortadas y sangrantes cosidas.</p>
+                    <p class="poem-line">Une en el hilo nuestras heridas,</p>
+                    <p class="poem-line text-red-700/50">el rojo que sella lo que nadie olvida.</p>
+                </div>
+
+                <div class="w-24 h-px bg-red-900/30 mx-auto"></div>
+
+                <div class="space-y-4">
+                    <p class="poem-line text-red-500 typewriter">No soy bonito, soy el eco del dolor,</p>
+                    <p class="poem-line">un alma en pena que ya no grita por amor,</p>
+                    <p class="poem-line">sino por el silencio que te ahoga en la noche,</p>
+                    <p class="poem-line italic">por las lágrimas que tragas sin que nadie lo note.</p>
+                </div>
+
+                <div class="w-24 h-px bg-red-900/30 mx-auto"></div>
+
+                <div class="space-y-4">
+                    <p class="poem-line">Conozco tus silenciosas heridas,</p>
+                    <p class="poem-line text-3xl text-red-700 title-font">el sonido de tu llanto al romperse</p>
+                    <p class="poem-line">las pisadas tortuosas en tus huidas,</p>
+                    <p class="poem-line italic text-zinc-600">las estrellas que murmuran tu duelo.</p>
+                </div>
+            </div>
+
+            <div class="mt-40 text-center">
+                <p class="text-[10px] tracking-[0.3em] text-zinc-800 mb-8 uppercase">Mantén presionado para despertar al guardián</p>
+                <div class="secret-seal" id="seal">
+                    <div class="w-2 h-2 bg-red-900 rounded-full animate-pulse"></div>
+                </div>
+
+                <div id="secret-message" class="text-center">
+                    <p class="typewriter text-red-600 text-lg italic">"No tienes que brillar para no estar sola."</p>
+                    <p class="mt-4 text-[11px] text-zinc-500 uppercase tracking-widest">— Azrael te observa —</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-20 text-center opacity-20">
+            <p class="text-[9px] tracking-[1em]">MEMENTO MORI</p>
+        </footer>
+    </div>
+
+    <script>
+        // 1. Cenizas Sensibles
+        const canvas = document.getElementById('canvas-ash');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = 0;
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Ash {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 10;
+                this.size = Math.random() * 1.5;
+                this.speedY = Math.random() * -0.8 - 0.2;
+                this.wind = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.wind + (mouseX - window.innerWidth/2) * 0.001;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(120, 0, 0, 0.3)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (particles.length < 80) particles.push(new Ash());
+            particles.forEach((p, i) => {
+                p.update();
+                p.draw();
+                if (p.y < 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        // 2. Luz e Interacción
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            document.getElementById('flashlight').style.setProperty('--x', e.clientX + 'px');
+            document.getElementById('flashlight').style.setProperty('--y', e.clientY + 'px');
+        });
+
+        // 3. Revelar Secreto
+        const seal = document.getElementById('seal');
+        const message = document.getElementById('secret-message');
+        let timer;
+
+        seal.addEventListener('mousedown', () => {
+            timer = setTimeout(() => {
+                message.classList.add('revealed');
+                seal.style.borderColor = "red";
+                seal.style.boxShadow = "0 0 50px red";
+            }, 1500);
+        });
+
+        seal.addEventListener('mouseup', () => clearTimeout(timer));
+
+        // 4. Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.poem-line').forEach(line => observer.observe(line));
+        window.addEventListener('resize', init);
+        init(); animate();
+    </script>
+</body>
+</html>
